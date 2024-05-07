@@ -42,10 +42,33 @@ const agregarJugador = async () => {
     }
 };
 
-
 // Función asíncrona para listar todos los jugadores del equipo
 const listarJugadores = async () => {
-    // Implementación para listar todos los jugadores
+    let contenedor = document.getElementById("contenedor")
+    while (contenedor.firstChild) {
+        contenedor.removeChild(contenedor.firstChild);
+    }
+    let jugadores = obtenerJugadoresLocalStorage()
+    for(let x = 0; x < jugadores.length; x++){
+        let row = document.createElement('div')
+
+        let card = document.createElement('div')
+
+        let nombre = document.createElement('h3')
+        nombre.innerHTML = jugadores[x].nombre
+        card.appendChild(nombre)
+                
+        let edad = document.createElement('p')
+        edad.innerHTML = jugadores[x].edad
+        card.appendChild(edad)
+
+        let posicion = document.createElement('p')
+        posicion.innerHTML = jugadores[x].posicion
+        card.appendChild(posicion)
+
+        row.appendChild(card)
+        contenedor.appendChild(row)
+    }
 };
 
 // Función asíncrona para asignar una nueva posición a un jugador
