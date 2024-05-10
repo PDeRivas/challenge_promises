@@ -1,0 +1,23 @@
+body, html{
+    background-image: url('img/background3.jpg');
+    height: 100%;
+    width: auto;
+    background-attachment: fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.titulo{
+    width: 30%;
+}
+
+nav{
+    height: 8%;
+}
+
+#contenedor{
+    white-space: nowrap;
+}
