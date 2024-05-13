@@ -21,3 +21,7 @@ nav{
 #contenedor{
     white-space: nowrap;
 }
+
+#agregar{
+    width: 20%;
+}
