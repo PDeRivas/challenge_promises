@@ -49,6 +49,7 @@ const agregarJugador = async () => {
         let inputNombre = document.createElement('input')
         inputNombre.type = 'text'
         inputNombre.name = 'nombre'
+        inputNombre.required = 'required'
         inputNombre.placeholder = 'Nombre'
         inputNombre.className = 'form-control w-50'
         rowNombre.appendChild(labelNombre)
@@ -66,16 +67,6 @@ const agregarJugador = async () => {
         
         rowEdad.appendChild(labelEdad)
         rowEdad.appendChild(inputEdad)
-
-        // let rowPosicion = document.createElement('div')
-        // rowPosicion.className = 'row justify-content-center my-4 mx-0'
-        // let labelPosicion = document.createElement('label')
-        // labelPosicion.for = 'posicion'
-        // let inputPosicion = document.createElement('input')
-        // inputPosicion.type = 'text'
-        // inputPosicion.name = 'posicion'
-        // inputPosicion.placeholder = 'Posicion'
-        // inputPosicion.className = 'form-control w-50'
 
         let rowPosicion = document.createElement('div')
         rowPosicion.className = 'row justify-content-center my-4 mx-0'
@@ -123,8 +114,6 @@ const agregarJugador = async () => {
                     let formData = new FormData(data.target)
                     let id = obtenerJugadoresLocalStorage().length + 1
                     let nombre = formData.get('nombre')
-                    console.log(nombre)
-                    console.log(jugadores.indexOf(jugadores.find(jugador => jugador.nombre === nombre)))
                     if (jugadores.indexOf(jugadores.find(jugador => jugador.nombre === nombre)) != -1){
                         throw new Error('Un jugador con el mismo nombre esta en el equipo')
                     }
@@ -137,7 +126,9 @@ const agregarJugador = async () => {
                     guardarJugadoresLocalStorage(jugadores);
         
                     await new Promise(resolve => setTimeout(resolve, 1000));
+                    
                     resolve(alert('Jugador agregado correctamente.'))
+                    listarJugadores()
                 }
                 catch(error){
                     reject(alert(error))
@@ -232,20 +223,19 @@ const listarJugadores = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     let jugadores = await obtenerJugadoresLocalStorage()
     let jugadoresJugando = 0
-
     jugadores.forEach(jugador => {
         if (jugador.jugando) {
             jugadoresJugando += 1
         }
+    })
+    
+    jugadores.forEach(jugador => {
         tarjetaJugador(contenedor, jugador, jugadoresJugando, listarJugadores)
-    }
-    )
-    console.log(`Cantidad de jugadores jugando ${jugadoresJugando}`)
+    })
 };
 
 const verPartido = async (cambiosRestantes = 3) => {
     let contenedor = await limpiarContenedor('Jugadores en el Partido')
-    console.log(cambiosRestantes)
 
     if (cambiosRestantes > 0){
         let row1 = document.createElement('div')
@@ -312,7 +302,6 @@ const verPartido = async (cambiosRestantes = 3) => {
         }
     }
     )
-    console.log(`Cantidad de jugadores jugando ${jugadoresJugando}`)
 }
 
 const cambio = async (cambiosRestantes) => {
@@ -338,7 +327,6 @@ const cambio = async (cambiosRestantes) => {
         }
         )
     })
-    console.log(jugadorSacar)
 
     contenedor = await limpiarContenedor('Cambio')
 
@@ -358,7 +346,6 @@ const cambio = async (cambiosRestantes) => {
         )
     })
 
-    console.log(`Jugadores jugando: ${jugadoresJugando}`)
     await ponerAJugar(jugadorPoner, jugadoresJugando)
     await ponerAJugar(jugadorSacar, jugadoresJugando)
     cambiosRestantes -= 1
@@ -389,11 +376,11 @@ const ponerAJugar = async (jugadorJugar, jugadoresJugando, metodo = () => {}) =>
             metodo()
         }
         else {
-            console.log('No se pueden agregar mas jugadores')
+            throw new Error('No se pueden meter mas jugadores')
         }
     }
     catch (error) {
-        console.error('Error:', error.message);
+        alert(error.message);
     }
 };
 
