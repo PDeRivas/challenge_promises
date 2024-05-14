@@ -59,24 +59,52 @@ const agregarJugador = async () => {
         let labelEdad = document.createElement('label')
         labelEdad.for = 'edad'
         let inputEdad = document.createElement('input')
-        inputEdad.type = 'number'
+        inputEdad.type = "number"
         inputEdad.name = 'edad'
         inputEdad.placeholder = 'Edad'
         inputEdad.className = 'form-control w-50'
+        
         rowEdad.appendChild(labelEdad)
         rowEdad.appendChild(inputEdad)
 
+        // let rowPosicion = document.createElement('div')
+        // rowPosicion.className = 'row justify-content-center my-4 mx-0'
+        // let labelPosicion = document.createElement('label')
+        // labelPosicion.for = 'posicion'
+        // let inputPosicion = document.createElement('input')
+        // inputPosicion.type = 'text'
+        // inputPosicion.name = 'posicion'
+        // inputPosicion.placeholder = 'Posicion'
+        // inputPosicion.className = 'form-control w-50'
+
         let rowPosicion = document.createElement('div')
         rowPosicion.className = 'row justify-content-center my-4 mx-0'
-        let labelPosicion = document.createElement('label')
-        labelPosicion.for = 'posicion'
-        let inputPosicion = document.createElement('input')
-        inputPosicion.type = 'text'
-        inputPosicion.name = 'posicion'
-        inputPosicion.placeholder = 'Posicion'
-        inputPosicion.className = 'form-control w-50'
-        rowPosicion.appendChild(labelPosicion)
-        rowPosicion.appendChild(inputPosicion)
+
+        let selectPosicion = document.createElement('select')
+        selectPosicion.name = 'posicion'
+        selectPosicion.className = 'form-control w-50'
+
+        let optionArquero = document.createElement('option')
+        optionArquero.innerHTML = 'Arquero'
+        optionArquero.value = 'Arquero'
+        selectPosicion.appendChild(optionArquero)
+
+        let optionDelantero = document.createElement('option')
+        optionDelantero.innerHTML = 'Delantero'
+        selectPosicion.appendChild(optionDelantero)
+        optionDelantero.value = 'Delantero'
+
+        let optionDefensor = document.createElement('option')
+        optionDefensor.innerHTML = 'Defensor'
+        selectPosicion.appendChild(optionDefensor)
+        optionDefensor.value = 'Defensor'
+
+        let optionMediocampo = document.createElement('option')
+        optionMediocampo.innerHTML = 'Mediocampo'
+        selectPosicion.appendChild(optionMediocampo)
+        optionMediocampo.value = 'Mediocampo'
+
+        rowPosicion.appendChild(selectPosicion)
 
         let rowSubmit = document.createElement('div')
         rowSubmit.className = 'row justify-content-center mx-0'
@@ -89,23 +117,33 @@ const agregarJugador = async () => {
 
         form.addEventListener('submit', async (data) => {
             data.preventDefault()
+            new Promise(async (resolve, reject) => {
+                try{
+                    let jugadores = obtenerJugadoresLocalStorage();
+                    let formData = new FormData(data.target)
+                    let id = obtenerJugadoresLocalStorage().length + 1
+                    let nombre = formData.get('nombre')
+                    console.log(nombre)
+                    console.log(jugadores.indexOf(jugadores.find(jugador => jugador.nombre === nombre)))
+                    if (jugadores.indexOf(jugadores.find(jugador => jugador.nombre === nombre)) != -1){
+                        throw new Error('Un jugador con el mismo nombre esta en el equipo')
+                    }
+                    let edad = formData.get('edad')
+                    edad = parseInt(edad)
+                    let posicion = formData.get('posicion')
+                    let jugando = false
+        
+                    jugadores.push({ id, nombre, edad, posicion, jugando });
+                    guardarJugadoresLocalStorage(jugadores);
+        
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    resolve(alert('Jugador agregado correctamente.'))
+                }
+                catch(error){
+                    reject(alert(error))
+                }
 
-            let jugadores = obtenerJugadoresLocalStorage();
-
-            let formData = new FormData(data.target)
-            let id = obtenerJugadoresLocalStorage().length + 1
-            let nombre = formData.get('nombre')
-            let edad = formData.get('edad')
-            let posicion = formData.get('posicion')
-            let jugando = false
-
-            jugadores.push({ id, nombre, edad, posicion, jugando });
-            guardarJugadoresLocalStorage(jugadores);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            alert('Jugador agregado correctamente.');
-            listarJugadores()
-        })
+        })})
         form.appendChild(rowNombre)
         form.appendChild(rowEdad)
         form.appendChild(rowPosicion)
@@ -205,26 +243,63 @@ const listarJugadores = async () => {
     console.log(`Cantidad de jugadores jugando ${jugadoresJugando}`)
 };
 
-const verPartido = async () => {
+const verPartido = async (cambiosRestantes = 3) => {
     let contenedor = await limpiarContenedor('Jugadores en el Partido')
+    console.log(cambiosRestantes)
 
-    let row1 = document.createElement('div')
-    row1.className = 'row mx-0'
+    if (cambiosRestantes > 0){
+        let row1 = document.createElement('div')
+        row1.className = 'row mx-0'
 
-    let col1 = document.createElement('div')
-    col1.className = 'col-4'
+        let col1 = document.createElement('div')
+        col1.className = 'col-4'
 
-    let realizarCambio = document.createElement('button')
-    realizarCambio.innerHTML = 'Realizar Cambio'
-    realizarCambio.type = 'button'
-    realizarCambio.className = 'btn btn-info rounded-0'
-    realizarCambio.addEventListener('click', (botonApretado) => {
-        cambio(true)
-    })
-    realizarCambio.className = 'col-4 text-center mx-0 p-3 bg-success border border-success'
-    row1.appendChild(col1)
-    row1.appendChild(realizarCambio)
-    contenedor.appendChild(row1)
+        let realizarCambio = document.createElement('button')
+        realizarCambio.innerHTML = 'Realizar Cambio'
+        realizarCambio.type = 'button'
+        realizarCambio.className = 'btn btn-info rounded-0'
+        realizarCambio.addEventListener('click', (botonApretado) => {
+            cambio(cambiosRestantes)
+        })
+        realizarCambio.className = 'col-4 text-center mx-0 p-3 bg-success border border-success'
+
+        row1.appendChild(col1)
+        row1.appendChild(realizarCambio)
+        contenedor.appendChild(row1)
+
+        let row2 = document.createElement('div')
+        row2.className = 'row mx-0'
+
+        let col2 = document.createElement('div')
+        col2.className = 'col-4'
+
+        let divCambios = document.createElement('div')
+        divCambios.className = ('col-4 my-1')
+        let cartelCambios = document.createElement('h2')
+        cartelCambios.innerHTML = `Cambios restantes: ${cambiosRestantes}`
+        cartelCambios.className = 'text-center mx-0 my-0 p-3 bg-danger border border-info'
+
+        divCambios.appendChild(cartelCambios)
+
+        row2.appendChild(col2)
+        row2.appendChild(divCambios)
+        contenedor.appendChild(row2)
+    }
+    else{
+        let row1 = document.createElement('div')
+        row1.className = 'row mx-0'
+
+        let col1 = document.createElement('div')
+        col1.className = 'col-4'
+
+        let cartelSinCambios = document.createElement('h2')
+        cartelSinCambios.innerHTML = `No quedan mas cambios`
+        cartelSinCambios.className = 'col-4 text-center mx-0 my-0 p-3 bg-danger border border-info'
+
+        row1.appendChild(col1)
+        row1.appendChild(cartelSinCambios)
+        contenedor.appendChild(row1)
+    }
 
     let jugadores = await obtenerJugadoresLocalStorage()
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -240,7 +315,7 @@ const verPartido = async () => {
     console.log(`Cantidad de jugadores jugando ${jugadoresJugando}`)
 }
 
-const cambio = async () => {
+const cambio = async (cambiosRestantes) => {
     let contenedor = await limpiarContenedor('Cambio')
 
     let jugadores = await obtenerJugadoresLocalStorage()
@@ -270,7 +345,6 @@ const cambio = async () => {
     jugadorPoner = await new Promise(resolve => {
         jugadores.forEach(jugador => {
             if (!jugador.jugando) {
-                jugadoresJugando += 1
                 tarjetaJugador(contenedor,
                     jugador,
                     jugadoresJugando,
@@ -284,9 +358,11 @@ const cambio = async () => {
         )
     })
 
+    console.log(`Jugadores jugando: ${jugadoresJugando}`)
     await ponerAJugar(jugadorPoner, jugadoresJugando)
     await ponerAJugar(jugadorSacar, jugadoresJugando)
-    verPartido()
+    cambiosRestantes -= 1
+    verPartido(cambiosRestantes)
 }
 
 // Función asíncrona para asignar una nueva posición a un jugador
@@ -320,17 +396,5 @@ const ponerAJugar = async (jugadorJugar, jugadoresJugando, metodo = () => {}) =>
         console.error('Error:', error.message);
     }
 };
-
-// Función principal asíncrona que interactúa con el usuario
-const main = async () => {
-    try {
-        // Lógica para interactuar con el usuario y llamar a las funciones adecuadas
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
-
-// Llamar a la función principal para iniciar la aplicación
-main();
 
 limpiarContenedor()
