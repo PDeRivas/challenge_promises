@@ -110,9 +110,9 @@ const agregarJugador = async () => {
             data.preventDefault()
             new Promise(async (resolve, reject) => {
                 try{
-                    let jugadores = obtenerJugadoresLocalStorage();
+                    let jugadores = await obtenerJugadoresLocalStorage();
                     let formData = new FormData(data.target)
-                    let id = obtenerJugadoresLocalStorage().length + 1
+                    let id = jugadores.length + 1
                     let nombre = formData.get('nombre')
                     if (jugadores.indexOf(jugadores.find(jugador => jugador.nombre === nombre)) != -1){
                         throw new Error('Un jugador con el mismo nombre esta en el equipo')
@@ -371,7 +371,6 @@ const ponerAJugar = async (jugadorJugar, jugadoresJugando, metodo = () => {}) =>
     let jugadores = await obtenerJugadoresLocalStorage();
     try {
         let posJugador = jugadores.indexOf(jugadores.find(jugador => jugador.id === jugadorJugar.id))
-        console.log((jugadoresJugando == 11 && jugadores[posJugador].jugando) || jugadoresJugando < 11)
         if ((jugadoresJugando == 11 && jugadores[posJugador].jugando) || jugadoresJugando < 11) {
             jugadores[posJugador].jugando = !jugadores[posJugador].jugando
             guardarJugadoresLocalStorage(jugadores)
