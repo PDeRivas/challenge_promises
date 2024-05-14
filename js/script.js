@@ -1,5 +1,5 @@
 // Función para obtener los jugadores del localStorage
-const obtenerJugadoresLocalStorage = () => {
+const obtenerJugadoresLocalStorage = async () => {
     const jugadoresString = localStorage.getItem('jugadores');
     return jugadoresString ? JSON.parse(jugadoresString) : [];
 };
@@ -346,8 +346,9 @@ const cambio = async (cambiosRestantes) => {
         )
     })
 
-    await ponerAJugar(jugadorPoner, jugadoresJugando)
     await ponerAJugar(jugadorSacar, jugadoresJugando)
+    jugadoresJugando -=1
+    await ponerAJugar(jugadorPoner, jugadoresJugando)
     cambiosRestantes -= 1
     verPartido(cambiosRestantes)
 }
@@ -370,6 +371,7 @@ const ponerAJugar = async (jugadorJugar, jugadoresJugando, metodo = () => {}) =>
     let jugadores = await obtenerJugadoresLocalStorage();
     try {
         let posJugador = jugadores.indexOf(jugadores.find(jugador => jugador.id === jugadorJugar.id))
+        console.log((jugadoresJugando == 11 && jugadores[posJugador].jugando) || jugadoresJugando < 11)
         if ((jugadoresJugando == 11 && jugadores[posJugador].jugando) || jugadoresJugando < 11) {
             jugadores[posJugador].jugando = !jugadores[posJugador].jugando
             guardarJugadoresLocalStorage(jugadores)
